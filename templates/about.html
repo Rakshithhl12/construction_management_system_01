@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+{% block page_title %}About{% endblock %}
+
+{% block content %}
+<div class="page-grid" style="gap:20px;max-width:800px;">
+    <div class="card">
+        <div class="card-title"><i class="fas fa-hard-hat"></i> Construction Management System</div>
+        <p style="color:var(--text-muted);line-height:1.7;margin-bottom:16px;">
+            A comprehensive platform built to streamline construction project operations — from workforce
+            and task management to budget tracking, safety reporting, and document control.
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:8px;">
+            {% set features = [
+                ('fas fa-tasks','Task Management','Assign and track tasks by type, priority and status.'),
+                ('fas fa-users','Worker Management','Maintain worker records, departments and salaries.'),
+                ('fas fa-rupee-sign','Budget Tracking','Log and categorise all project expenditures.'),
+                ('fas fa-boxes','Inventory','Track materials, quantities and suppliers.'),
+                ('fas fa-exclamation-triangle','Incident Reporting','Log safety incidents and corrective actions.'),
+                ('fas fa-folder-open','Document Control','Maintain blueprints, contracts and permits.'),
+                ('fas fa-comment-dots','Feedback','Collect team and stakeholder feedback.'),
+                ('fas fa-calendar-check','Attendance','Daily attendance marking and summary.'),
+            ] %}
+            {% for icon, title, desc in features %}
+            <div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;padding:14px;">
+                <div style="color:var(--accent);margin-bottom:6px;"><i class="{{ icon }}"></i></div>
+                <div style="font-weight:600;font-size:.9rem;margin-bottom:4px;">{{ title }}</div>
+                <div style="font-size:.8rem;color:var(--text-muted);">{{ desc }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-title"><i class="fas fa-info-circle"></i> System Info</div>
+        <table style="font-size:.9rem;">
+            <tbody>
+                <tr><td style="padding:8px 16px 8px 0;color:var(--text-muted);font-weight:600;">Version</td><td>2.0.0</td></tr>
+                <tr><td style="padding:8px 16px 8px 0;color:var(--text-muted);font-weight:600;">Stack</td><td>Python · Flask · SQLite</td></tr>
+                <tr><td style="padding:8px 16px 8px 0;color:var(--text-muted);font-weight:600;">Auth</td><td>Session-based with SHA-256 password hashing</td></tr>
+                <tr><td style="padding:8px 16px 8px 0;color:var(--text-muted);font-weight:600;">Logged in as</td><td>{{ session.user_name }} ({{ session.user_role }})</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
