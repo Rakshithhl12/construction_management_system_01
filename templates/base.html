@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CMS{% endblock %} — Construction Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ── Sidebar ─────────────────────────────────── -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-hard-hat"></i>
+        <span>CMS</span>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
+            <i class="fas fa-th-large"></i><span>Dashboard</span>
+        </a>
+        <a href="{{ url_for('tasks') }}" class="nav-item {% if request.endpoint == 'tasks' %}active{% endif %}">
+            <i class="fas fa-tasks"></i><span>Tasks</span>
+        </a>
+        <a href="{{ url_for('workers') }}" class="nav-item {% if request.endpoint == 'workers' %}active{% endif %}">
+            <i class="fas fa-users"></i><span>Workers</span>
+        </a>
+        <a href="{{ url_for('budget') }}" class="nav-item {% if request.endpoint == 'budget' %}active{% endif %}">
+            <i class="fas fa-rupee-sign"></i><span>Budget</span>
+        </a>
+        <a href="{{ url_for('inventory') }}" class="nav-item {% if request.endpoint == 'inventory' %}active{% endif %}">
+            <i class="fas fa-boxes"></i><span>Inventory</span>
+        </a>
+        <a href="{{ url_for('incident') }}" class="nav-item {% if request.endpoint == 'incident' %}active{% endif %}">
+            <i class="fas fa-exclamation-triangle"></i><span>Incidents</span>
+        </a>
+        <a href="{{ url_for('documents') }}" class="nav-item {% if request.endpoint == 'documents' %}active{% endif %}">
+            <i class="fas fa-folder-open"></i><span>Documents</span>
+        </a>
+        <a href="{{ url_for('feedback') }}" class="nav-item {% if request.endpoint == 'feedback' %}active{% endif %}">
+            <i class="fas fa-comment-dots"></i><span>Feedback</span>
+        </a>
+        <a href="{{ url_for('attendance') }}" class="nav-item {% if request.endpoint == 'attendance' %}active{% endif %}">
+            <i class="fas fa-calendar-check"></i><span>Attendance</span>
+        </a>
+        <div class="nav-divider"></div>
+        <a href="{{ url_for('about') }}" class="nav-item {% if request.endpoint == 'about' %}active{% endif %}">
+            <i class="fas fa-info-circle"></i><span>About</span>
+        </a>
+        <a href="{{ url_for('contact') }}" class="nav-item {% if request.endpoint == 'contact' %}active{% endif %}">
+            <i class="fas fa-envelope"></i><span>Contact</span>
+        </a>
+    </nav>
+    <div class="sidebar-user">
+        <div class="user-avatar">{{ session.user_name[0]|upper if session.user_name else '?' }}</div>
+        <div class="user-info">
+            <div class="user-name">{{ session.user_name or 'User' }}</div>
+            <div class="user-role">{{ session.user_role or 'Member' }}</div>
+        </div>
+        <a href="{{ url_for('logout') }}" class="logout-btn" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+</aside>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ── Main Content ────────────────────────────── -->
+<main class="main-content" id="mainContent">
+    <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+        <div class="topbar-right">
+            <span class="topbar-user"><i class="fas fa-user-circle"></i> {{ session.user_name or '' }}</span>
+        </div>
+    </header>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'danger' %}fa-times-circle{% elif category == 'warning' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+                {{ message }}
+                <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="page-body">
+        {% block content %}{% endblock %}
+    </div>
+</main>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

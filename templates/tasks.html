@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Tasks{% endblock %}
+{% block page_title %}Task Management{% endblock %}
+
+{% block content %}
+<div class="page-grid" style="gap:20px;">
+    <!-- Add Task Form -->
+    <div class="card">
+        <div class="card-title"><i class="fas fa-plus-circle"></i> Add New Task</div>
+        <form method="POST" action="{{ url_for('add_tasks') }}">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Task Name</label>
+                    <input type="text" name="taskName" placeholder="Enter task name" required>
+                </div>
+                <div class="form-group">
+                    <label>Task Type</label>
+                    <select name="taskType" required>
+                        <option value="design">Design</option>
+                        <option value="construction">Construction</option>
+                        <option value="inspection">Inspection</option>
+                        <option value="planning">Planning</option>
+                        <option value="procurement">Procurement</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select name="taskPriority" required>
+                        <option value="high">High</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Assigned To</label>
+                    <input type="text" name="assignedTo" placeholder="Worker name">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="taskStatus" required>
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="on_hold">On Hold</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" name="startDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Due Date</label>
+                    <input type="date" name="dueDate" required>
+                </div>
+                <div class="form-group full">
+                    <label>Description</label>
+                    <textarea name="taskDescription" placeholder="Task details..."></textarea>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Task</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tasks List -->
+    <div class="card">
+        <div class="section-header">
+            <div class="card-title" style="margin:0;"><i class="fas fa-list"></i> All Tasks</div>
+            <span class="text-muted" style="font-size:.85rem;">{{ tasks|length }} total</span>
+        </div>
+        {% if tasks %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Type</th>
+                        <th>Priority</th>
+                        <th>Assigned To</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in tasks %}
+                    <tr>
+                        <td><strong>{{ t.task_name }}</strong></td>
+                        <td>{{ t.task_type|capitalize }}</td>
+                        <td>
+                            {% if t.priority == 'high' %}<span class="pri-high"><i class="fas fa-arrow-up"></i> High</span>
+                            {% elif t.priority == 'medium' %}<span class="pri-medium"><i class="fas fa-minus"></i> Medium</span>
+                            {% else %}<span class="pri-low"><i class="fas fa-arrow-down"></i> Low</span>{% endif %}
+                        </td>
+                        <td>{{ t.assigned_to or '—' }}</td>
+                        <td>
+                            {% if t.status == 'completed' %}<span class="badge badge-success">Completed</span>
+                            {% elif t.status == 'in_progress' %}<span class="badge badge-info">In Progress</span>
+                            {% elif t.status == 'on_hold' %}<span class="badge badge-warning">On Hold</span>
+                            {% else %}<span class="badge badge-muted">Pending</span>{% endif %}
+                        </td>
+                        <td>{{ t.due_date or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-tasks"></i>
+            <p>No tasks yet. Add your first task above.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

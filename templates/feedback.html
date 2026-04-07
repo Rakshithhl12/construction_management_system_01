@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Feedback{% endblock %}
+{% block page_title %}Feedback Collection{% endblock %}
+
+{% block content %}
+<div class="page-grid" style="gap:20px;">
+    <div class="card">
+        <div class="card-title"><i class="fas fa-comment-dots"></i> Submit Feedback</div>
+        <form method="POST" action="{{ url_for('submit_feedback') }}">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" name="feedbackTitle" placeholder="Feedback subject" required>
+                </div>
+                <div class="form-group">
+                    <label>Rating (1–5)</label>
+                    <select name="feedbackRating" required>
+                        <option value="5">⭐⭐⭐⭐⭐ — Excellent</option>
+                        <option value="4">⭐⭐⭐⭐ — Good</option>
+                        <option value="3" selected>⭐⭐⭐ — Average</option>
+                        <option value="2">⭐⭐ — Poor</option>
+                        <option value="1">⭐ — Very Poor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" name="feedbackAuthor" placeholder="Full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="feedbackEmail" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group full">
+                    <label>Comments</label>
+                    <textarea name="feedbackDescription" placeholder="Share your feedback in detail..." required></textarea>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Feedback</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <div class="section-header">
+            <div class="card-title" style="margin:0;"><i class="fas fa-star"></i> Feedback Received</div>
+            <span class="text-muted" style="font-size:.85rem;">{{ feedbacks|length }} entries</span>
+        </div>
+        {% if feedbacks %}
+        <div style="display:flex;flex-direction:column;gap:12px;">
+            {% for fb in feedbacks %}
+            <div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;padding:16px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                    <div>
+                        <div style="font-weight:600;margin-bottom:4px;">{{ fb.title }}</div>
+                        <div style="font-size:.82rem;color:var(--text-muted);">{{ fb.author }} &bull; {{ fb.email }}</div>
+                    </div>
+                    <div class="stars" style="font-size:1.1rem;flex-shrink:0;">
+                        {% for i in range(fb.rating or 0) %}★{% endfor %}{% for i in range(5 - (fb.rating or 0)) %}<span style="opacity:.3;">★</span>{% endfor %}
+                    </div>
+                </div>
+                {% if fb.description %}
+                <p style="margin-top:10px;font-size:.88rem;color:var(--text-muted);line-height:1.5;">{{ fb.description }}</p>
+                {% endif %}
+                <div style="font-size:.75rem;color:var(--text-muted);margin-top:8px;">{{ fb.created_at }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-comment-dots"></i>
+            <p>No feedback submitted yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

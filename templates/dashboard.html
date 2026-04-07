@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats row -->
+<div class="stats-grid mb-3">
+    <div class="stat-card c-tasks">
+        <div class="stat-icon"><i class="fas fa-tasks"></i></div>
+        <div class="stat-value">{{ stats.tasks }}</div>
+        <div class="stat-label">Tasks</div>
+    </div>
+    <div class="stat-card c-workers">
+        <div class="stat-icon"><i class="fas fa-users"></i></div>
+        <div class="stat-value">{{ stats.workers }}</div>
+        <div class="stat-label">Workers</div>
+    </div>
+    <div class="stat-card c-budget">
+        <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+        <div class="stat-value">{{ stats.budgets }}</div>
+        <div class="stat-label">Budget Entries</div>
+    </div>
+    <div class="stat-card c-incident">
+        <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="stat-value">{{ stats.incidents }}</div>
+        <div class="stat-label">Incidents</div>
+    </div>
+    <div class="stat-card c-inv">
+        <div class="stat-icon"><i class="fas fa-boxes"></i></div>
+        <div class="stat-value">{{ stats.inventory }}</div>
+        <div class="stat-label">Inventory Items</div>
+    </div>
+    <div class="stat-card c-docs">
+        <div class="stat-icon"><i class="fas fa-folder-open"></i></div>
+        <div class="stat-value">{{ stats.documents }}</div>
+        <div class="stat-label">Documents</div>
+    </div>
+</div>
+
+<!-- Quick access -->
+<div class="card">
+    <div class="card-title"><i class="fas fa-th-large"></i> Quick Access</div>
+    <div class="module-grid">
+        <a href="{{ url_for('tasks') }}" class="module-card">
+            <i class="fas fa-tasks"></i><span>Task Management</span>
+        </a>
+        <a href="{{ url_for('workers') }}" class="module-card">
+            <i class="fas fa-users"></i><span>Workers</span>
+        </a>
+        <a href="{{ url_for('budget') }}" class="module-card">
+            <i class="fas fa-rupee-sign"></i><span>Budget Tracking</span>
+        </a>
+        <a href="{{ url_for('inventory') }}" class="module-card">
+            <i class="fas fa-boxes"></i><span>Inventory</span>
+        </a>
+        <a href="{{ url_for('incident') }}" class="module-card">
+            <i class="fas fa-exclamation-triangle"></i><span>Incidents</span>
+        </a>
+        <a href="{{ url_for('documents') }}" class="module-card">
+            <i class="fas fa-folder-open"></i><span>Documents</span>
+        </a>
+        <a href="{{ url_for('feedback') }}" class="module-card">
+            <i class="fas fa-comment-dots"></i><span>Feedback</span>
+        </a>
+        <a href="{{ url_for('attendance') }}" class="module-card">
+            <i class="fas fa-calendar-check"></i><span>Attendance</span>
+        </a>
+    </div>
+</div>
+{% endblock %}

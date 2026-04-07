@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Attendance{% endblock %}
+{% block page_title %}Attendance{% endblock %}
+
+{% block content %}
+<div class="card mb-3">
+    <div class="card-title"><i class="fas fa-calendar-check"></i> Attendance Tracker</div>
+    <p class="text-muted" style="font-size:.9rem;margin-bottom:20px;">
+        Mark attendance for today. Select workers and their status below.
+    </p>
+
+    <form id="attendanceForm">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:flex-end;">
+            <div class="form-group" style="flex:1;min-width:160px;">
+                <label>Date</label>
+                <input type="date" id="attendDate" name="date">
+            </div>
+            <div class="form-group" style="flex:2;min-width:200px;">
+                <label>Worker Name</label>
+                <input type="text" id="workerInput" placeholder="Enter worker name">
+            </div>
+            <div class="form-group" style="flex:1;min-width:140px;">
+                <label>Status</label>
+                <select id="statusInput">
+                    <option value="present">Present</option>
+                    <option value="absent">Absent</option>
+                    <option value="half_day">Half Day</option>
+                    <option value="on_leave">On Leave</option>
+                </select>
+            </div>
+            <div>
+                <button type="button" class="btn btn-primary" onclick="addAttendanceRow()">
+                    <i class="fas fa-plus"></i> Add
+                </button>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="attendanceTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Worker Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceBody">
+                    <tr id="emptyRow">
+                        <td colspan="4" class="text-muted" style="text-align:center;padding:32px;">
+                            Add workers above to mark attendance.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-actions mt-2">
+            <button type="button" class="btn btn-primary" onclick="saveAttendance()">
+                <i class="fas fa-save"></i> Save Attendance
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="clearAll()">
+                <i class="fas fa-trash"></i> Clear All
+            </button>
+            <span id="savedMsg" style="color:var(--green);font-size:.88rem;display:none;">
+                <i class="fas fa-check"></i> Saved locally!
+            </span>
+        </div>
+    </form>
+</div>
+
+<!-- Summary -->
+<div class="card">
+    <div class="card-title"><i class="fas fa-chart-pie"></i> Today's Summary</div>
+    <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr));">
+        <div class="stat-card c-workers"><div class="stat-icon"><i class="fas fa-user-check"></i></div><div class="stat-value" id="cntPresent">0</div><div class="stat-label">Present</div></div>
+        <div class="stat-card c-incident"><div class="stat-icon"><i class="fas fa-user-times"></i></div><div class="stat-value" id="cntAbsent">0</div><div class="stat-label">Absent</div></div>
+        <div class="stat-card c-budget"><div class="stat-icon"><i class="fas fa-user-clock"></i></div><div class="stat-value" id="cntHalf">0</div><div class="stat-label">Half Day</div></div>
+        <div class="stat-card c-docs"><div class="stat-icon"><i class="fas fa-umbrella-beach"></i></div><div class="stat-value" id="cntLeave">0</div><div class="stat-label">On Leave</div></div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+let rows = [];
+let counter = 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('attendDate').value = today;
+});
+
+function addAttendanceRow() {
+    const name = document.getElementById('workerInput').value.trim();
+    const status = document.getElementById('statusInput').value;
+    if (!name) { alert('Please enter a worker name.'); return; }
+
+    counter++;
+    rows.push({ id: counter, name, status });
+    renderTable();
+    document.getElementById('workerInput').value = '';
+    updateSummary();
+}
+
+function removeRow(id) {
+    rows = rows.filter(r => r.id !== id);
+    renderTable();
+    updateSummary();
+}
+
+function changeStatus(id, val) {
+    const row = rows.find(r => r.id === id);
+    if (row) row.status = val;
+    updateSummary();
+}
+
+function renderTable() {
+    const tbody = document.getElementById('attendanceBody');
+    if (rows.length === 0) {
+        tbody.innerHTML = '<tr id="emptyRow"><td colspan="4" class="text-muted" style="text-align:center;padding:32px;">Add workers above to mark attendance.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = rows.map((r, i) => `
+        <tr>
+            <td>${i + 1}</td>
+            <td><strong>${r.name}</strong></td>
+            <td>
+                <select onchange="changeStatus(${r.id}, this.value)" style="width:auto;padding:6px 10px;">
+                    ${['present','absent','half_day','on_leave'].map(s =>
+                        `<option value="${s}" ${r.status===s?'selected':''}>${s.replace('_',' ').replace(/\b\w/g,c=>c.toUpperCase())}</option>`
+                    ).join('')}
+                </select>
+            </td>
+            <td><button class="btn btn-danger btn-sm" onclick="removeRow(${r.id})"><i class="fas fa-trash"></i></button></td>
+        </tr>
+    `).join('');
+}
+
+function updateSummary() {
+    document.getElementById('cntPresent').textContent = rows.filter(r => r.status === 'present').length;
+    document.getElementById('cntAbsent').textContent  = rows.filter(r => r.status === 'absent').length;
+    document.getElementById('cntHalf').textContent    = rows.filter(r => r.status === 'half_day').length;
+    document.getElementById('cntLeave').textContent   = rows.filter(r => r.status === 'on_leave').length;
+}
+
+function saveAttendance() {
+    const msg = document.getElementById('savedMsg');
+    msg.style.display = 'inline';
+    setTimeout(() => msg.style.display = 'none', 3000);
+}
+
+function clearAll() {
+    if (rows.length && !confirm('Clear all attendance records?')) return;
+    rows = []; counter = 0;
+    renderTable(); updateSummary();
+}
+</script>
+{% endblock %}
+{% endblock %}
